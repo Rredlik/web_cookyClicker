@@ -15,7 +15,7 @@ class UserForm(UserCreationForm):
             'class': 'form-control',
             'autocomplete': 'email',
             'placeholder': 'Введите никнейм'
-        }),
+        })
     )
 
     email = forms.EmailField(
@@ -25,7 +25,7 @@ class UserForm(UserCreationForm):
             'class': 'form-control',
             'autocomplete': 'email',
             'placeholder': 'example@mail.ru'
-        }),
+        })
     )
 
     password1 = forms.CharField(
@@ -35,8 +35,7 @@ class UserForm(UserCreationForm):
             'class': 'form-control',
             "autocomplete": "new-password",
             'placeholder': 'Введите пароль'
-        }),
-        help_text=_("<br>"),
+        })
     )
 
     password2 = forms.CharField(
@@ -46,8 +45,7 @@ class UserForm(UserCreationForm):
             "autocomplete": "new-password",
             'placeholder': 'Подтвердите пароль'
         }),
-        strip=False,
-        help_text=_(""),
+        strip=False
     )
 
     class Meta(UserCreationForm.Meta):

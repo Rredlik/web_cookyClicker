@@ -11,7 +11,7 @@
     <p class="lead mb-4">Введи данные ниже, чтобы создать аккаунт.</p><br>
   </div>
 
-    <div class="col-lg-4 mx-auto">
+    <div class="col-lg-2 mx-auto">
       <div class="form-floating mb-3">
         <form action="{% url 'register' %}" method="post" class="p-4 p-md-5 border rounded-3 bg-light">
           {% csrf_token %}
@@ -27,7 +27,6 @@
         <p>{{ form.errors.error }}</p>
       {% endif %}
     </div>
-
 
 </div>
 {% endblock content %}
