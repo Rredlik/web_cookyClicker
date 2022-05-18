@@ -1,13 +1,13 @@
 from django import forms
-from django.contrib.auth import get_user_model, password_validation
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UsernameField
-from django.forms import TextInput, Textarea, EmailInput
+from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import UserCreationForm, UsernameField
+from django.forms import TextInput
 from django.utils.translation import gettext_lazy as _
 
 User = get_user_model()
 
 
-class UserCreationForm(UserCreationForm):
+class UserForm(UserCreationForm):
     username = forms.CharField(
         label=_(""),
         max_length=254,
@@ -63,14 +63,19 @@ class UserCreationForm(UserCreationForm):
 
 
 class LoginForm(forms.Form):
-    username = UsernameField(widget=forms.TextInput(attrs={
-        "autofocus": True,
-        'placeholder': 'никнейм'
-    }))
+    username = UsernameField(
+        widget=forms.TextInput(attrs={
+            "autofocus": True,
+            'placeholder': 'никнейм'
+        })
+    )
     password = forms.CharField(
         label=_(""),
         strip=False,
-        widget=forms.PasswordInput(attrs={"autocomplete": "current-password"}),
+        widget=forms.PasswordInput(attrs={
+            "autocomplete": "current-password",
+            "placeholder": "пароль"
+        })
     )
 
     error_messages = {

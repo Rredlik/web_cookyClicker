@@ -8,15 +8,18 @@
 <div class="px-4 py-5 my-5 text-center">
   <h1 class="display-5 fw-bold">Регистрация!</h1>
   <div class="col-lg-5 mx-auto">
-    <p class="lead mb-4">Введи данные ниже, чтобы зарегестрироваться.</p><br>
+    <p class="lead mb-4">Введи данные ниже, чтобы создать аккаунт.</p><br>
   </div>
 
     <div class="col-lg-4 mx-auto">
       <div class="form-floating mb-3">
         <form action="{% url 'register' %}" method="post" class="p-4 p-md-5 border rounded-3 bg-light">
           {% csrf_token %}
-          {{ form }}
+          {{ form.as_p }}
+          <br>
           <button type="submit" class="w-45 btn btn-primary btn-lg">Создать аккаунт</button>
+          <br>
+          <a href="{% url 'login' %}">Уже есть аккаунт?</a>
         </form>
       </div>
 
@@ -24,6 +27,7 @@
         <p>{{ form.errors.error }}</p>
       {% endif %}
     </div>
+
 
 </div>
 {% endblock content %}

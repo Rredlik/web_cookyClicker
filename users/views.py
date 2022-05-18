@@ -1,11 +1,8 @@
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.views import LoginView
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views import View
-from .forms import LoginForm
-
-from users.forms import UserCreationForm, LoginForm
+from users.forms import UserForm
 
 
 class Register(View):
@@ -13,12 +10,12 @@ class Register(View):
 
     def get(self, request):
         context = {
-            'form': UserCreationForm()
+            'form': UserForm()
         }
         return render(request, self.template_name, context)
 
     def post(self, request):
-        form = UserCreationForm(request.POST)
+        form = UserForm(request.POST)
 
         if form.is_valid():
             form.save()
@@ -34,21 +31,22 @@ class Register(View):
 
 
 def UserLoginView(request):
+    form = UserForm()
+
     if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            cd = form.cleaned_data
-            user = authenticate(username=cd['username'], password=cd['password'])
-            if user is not None:
-                if user.is_active:
-                    login(request, user)
-                    return HttpResponse('Успешно авторизовался!')
-                else:
-                    return HttpResponse('Аккаунт отлючен!')
+        user = authenticate(
+            username=request.POST.get('username'),
+            password=request.POST.get('password')
+        )
+        if user is not None:
+            if user.is_active:
+                login(request, user)
+                return redirect('home')
             else:
-                return HttpResponse('Не верный логин')
-    else:
-        form = LoginForm()
+                return HttpResponse('Аккаунт отлючен!')
+        else:
+            return HttpResponse('Не верный логин')
+        return render(request, 'login.html', {'form': form, 'invalid': True})
 
     context = {
         'form': form

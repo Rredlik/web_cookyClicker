@@ -11,17 +11,24 @@
     <p class="lead mb-4">Введи данные ниже, чтобы войти.</p><br>
   </div>
 
-    <div class="col-lg-4 mx-auto">
+    <div class="col-lg-2 mx-auto">
 
       <div class="form-floating mb-3">
         <form action="{% url 'login' %}" method="post" class="p-4 p-md-5 border rounded-3 bg-light">
-          {{ form }}
           {% csrf_token %}
+          <div class="col-lg-15">
+            <label class="form-label">Никнейм:</label>
+            {{ form.username }}
+          </div>
           <br>
+          <div class="col-lg-15">
+            <label class="form-label">Пароль:</label>
+            {{ form.password }}
+          </div>
           <br>
           <button type="submit" class="w-50 btn btn-primary btn-lg">Войти</button><br>
           <a href="{% url 'password_reset' %}">Забыли пароль?</a>
-          <a href="{% url 'register' %}">Зарегестрироваться</a>
+          <a href="{% url 'register' %}">Нет аккаунта?</a>
         </form><br>
       </div>
 
