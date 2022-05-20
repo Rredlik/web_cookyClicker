@@ -26,3 +26,16 @@ class Core(models.Model):
     user = models.OneToOneField(User, null=False, on_delete=models.CASCADE)
     coins = models.IntegerField(default=0)
     click_power = models.IntegerField(default=1)
+
+
+class Task(models.Model):
+    """docstring for Task."""
+    title = models.CharField('Название', max_length=50)
+    task = models.TextField('Описание')
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = 'Задача'
+        verbose_name_plural = 'Задачи'
