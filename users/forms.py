@@ -1,8 +1,10 @@
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, UsernameField
-from django.forms import TextInput
+from django.forms import TextInput, ModelForm, Textarea
 from django.utils.translation import gettext_lazy as _
+
+from users.models import Task
 
 User = get_user_model()
 
@@ -83,3 +85,19 @@ class LoginForm(forms.Form):
         ),
         "inactive": _("This account is inactive."),
     }
+
+
+class TaskForm(ModelForm):
+    class Meta:
+        model = Task
+        fields = ["title", "task"]
+        widgets = {
+            "title": TextInput(attrs = {
+                'class': 'form-control',
+                'placeholder': 'Введите название'
+            }),
+            "task": Textarea(attrs = {
+                'class': 'form-control',
+                'placeholder': 'Введите описание'
+             })
+        }
