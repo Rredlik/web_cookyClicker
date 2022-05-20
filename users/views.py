@@ -2,7 +2,54 @@ from django.contrib.auth import authenticate, login
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views import View
-from users.forms import UserForm
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from users.forms import UserForm, TaskForm
+from users.models import Task
+
+
+class CookieView(APIView):
+    def get(self, request):
+        id = request.query_params.get('id')
+        if id:
+            cookie = Task.objects.filter(pk=id)
+            return Response(cookie.values())
+
+        cookies = Task.objects.all()
+        return Response(cookies.values())
+
+    def post(self, request):
+        title = request.data.get('title')
+        task = request.data.get('task')
+
+        if title and task:
+            cookie = Task.objects.create(title=title, task=task)
+            return Response({
+                'id': cookie.id,
+                'title': cookie.title,
+                'task': cookie.task,
+            })
+        return Response({'Error': 'Invalid data'})
+
+    def put(self, request):
+        id = request.data.get('id')
+        if id:
+            cookie = Task.objects.filter(pk=id)
+            cookie.update(
+                title=request.data.get('title'),
+                task=request.data.get('task'),
+            )
+            return Response(cookie.values())
+        return Response({'Error': 'Invalid data'})
+
+    def delete(self, request):
+        id = request.query_params.get('id')
+        if id:
+            cookie = Task.objects.get(pk=id)
+            cookie.delete()
+            return Response({'Response': f'task {id} deleted'})
+        return Response({'Error': 'Invalid data'})
 
 
 class Register(View):
@@ -52,3 +99,26 @@ def UserLoginView(request):
         'form': form
     }
     return render(request, 'users/login.html', context)
+
+
+def taskTables(request):
+    tasks = Task.objects.all()
+    return render(request, 'users/taskTables.html', {'title': 'Cтраница с задачами', 'tasks': tasks})
+
+
+def taskCreate(request):
+    error = ''
+    if request.method == 'POST':
+        form = TaskForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('tables')
+        else:
+            error = 'Форма была неверной'
+
+    form = TaskForm()
+    context = {
+        'form': form,
+        'error': error
+    }
+    return render(request, 'users/taskCreate.html', context)
