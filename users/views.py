@@ -3,10 +3,12 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views import View
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from users.forms import UserForm, TaskForm
 from users.models import Task, Core
+from users.serializer import CoreSerializer
 
 
 class CookieView(APIView):
@@ -83,6 +85,13 @@ class Register(View):
 def Game(request):
     core = Core.objects.get(user=request.user)  # Получаем объект игры текущего пользователя
     return render(request, 'users/game.html', {'core': core})
+
+
+@api_view(['GET'])
+def call_click(request):
+    core = Core.objects.get(user=request.user)
+    core.click()
+    return Response(CoreSerializer(core).data)
 
 
 def UserLoginView(request):

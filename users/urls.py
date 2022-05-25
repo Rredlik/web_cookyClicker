@@ -13,4 +13,5 @@ urlpatterns = [
     path('taskCreate/', views.taskCreate, name='create'),
 
     path('game/', views.Game, name='game'),
+    path('call_click/', views.call_click, name='call_click'),
 ]
