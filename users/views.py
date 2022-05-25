@@ -1,12 +1,12 @@
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views import View
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
 from users.forms import UserForm, TaskForm
-from users.models import Task
+from users.models import Task, Core
 
 
 class CookieView(APIView):
@@ -69,12 +69,20 @@ class Register(View):
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=password)
+            core = Core(user=user)
+            core.save()
             login(request, user)
             return redirect('home')
         context = {
             'form': form
         }
         return render(request, self.template_name, context)
+
+
+@login_required
+def Game(request):
+    core = Core.objects.get(user=request.user)  # Получаем объект игры текущего пользователя
+    return render(request, 'users/game.html', {'core': core})
 
 
 def UserLoginView(request):

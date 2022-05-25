@@ -4,6 +4,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 
+import users
+
 
 class User(AbstractUser):
     username_validator = UnicodeUsernameValidator()
@@ -23,13 +25,16 @@ class User(AbstractUser):
 
 
 class Core(models.Model):
-    user = models.OneToOneField(User, null=False, on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        User,
+        null=False,
+        on_delete=models.CASCADE
+    )
     coins = models.IntegerField(default=0)
     click_power = models.IntegerField(default=1)
 
 
 class Task(models.Model):
-    """docstring for Task."""
     title = models.CharField('Название', max_length=50)
     task = models.TextField('Описание')
 
