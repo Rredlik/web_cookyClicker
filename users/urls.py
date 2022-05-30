@@ -3,6 +3,15 @@ from django.contrib import admin
 from . import views
 from users.views import Register
 
+boost_list = views.BoostViewSet.as_view({
+    'get': 'list',
+    'post': 'create',
+})
+
+boost_details = views.BoostViewSet.as_view({
+    'put': 'partial_update',
+})
+
 urlpatterns = [
     path('', include('django.contrib.auth.urls')),
     path('register/', Register.as_view(), name='register'),
@@ -14,4 +23,6 @@ urlpatterns = [
 
     path('game/', views.Game, name='game'),
     path('call_click/', views.call_click, name='call_click'),
+    path('boosts/', boost_list, name='boosts'),
+    path('boosts/<int:pk>', boost_details, name='buy_boosts'),
 ]

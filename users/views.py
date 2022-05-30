@@ -3,55 +3,13 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views import View
+from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from users.forms import UserForm, TaskForm
-from users.models import Task, Core
-from users.serializer import CoreSerializer
-
-
-class CookieView(APIView):
-    def get(self, request):
-        id = request.query_params.get('id')
-        if id:
-            cookie = Task.objects.filter(pk=id)
-            return Response(cookie.values())
-
-        cookies = Task.objects.all()
-        return Response(cookies.values())
-
-    def post(self, request):
-        title = request.data.get('title')
-        task = request.data.get('task')
-
-        if title and task:
-            cookie = Task.objects.create(title=title, task=task)
-            return Response({
-                'id': cookie.id,
-                'title': cookie.title,
-                'task': cookie.task,
-            })
-        return Response({'Error': 'Invalid data'})
-
-    def put(self, request):
-        id = request.data.get('id')
-        if id:
-            cookie = Task.objects.filter(pk=id)
-            cookie.update(
-                title=request.data.get('title'),
-                task=request.data.get('task'),
-            )
-            return Response(cookie.values())
-        return Response({'Error': 'Invalid data'})
-
-    def delete(self, request):
-        id = request.query_params.get('id')
-        if id:
-            cookie = Task.objects.get(pk=id)
-            cookie.delete()
-            return Response({'Response': f'task {id} deleted'})
-        return Response({'Error': 'Invalid data'})
+from users.models import Task, Core, Boost
+from users.serializer import CoreSerializer, BoostSerializer
 
 
 class Register(View):
@@ -79,19 +37,6 @@ class Register(View):
             'form': form
         }
         return render(request, self.template_name, context)
-
-
-@login_required
-def Game(request):
-    core = Core.objects.get(user=request.user)  # Получаем объект игры текущего пользователя
-    return render(request, 'users/game.html', {'core': core})
-
-
-@api_view(['GET'])
-def call_click(request):
-    core = Core.objects.get(user=request.user)
-    core.click()
-    return Response(CoreSerializer(core).data)
 
 
 def UserLoginView(request):
@@ -139,3 +84,93 @@ def taskCreate(request):
         'error': error
     }
     return render(request, 'users/taskCreate.html', context)
+
+
+class CookieView(APIView):
+    def get(self, request):
+        id = request.query_params.get('id')
+        if id:
+            cookie = Task.objects.filter(pk=id)
+            return Response(cookie.values())
+
+        cookies = Task.objects.all()
+        return Response(cookies.values())
+
+    def post(self, request):
+        title = request.data.get('title')
+        task = request.data.get('task')
+
+        if title and task:
+            cookie = Task.objects.create(title=title, task=task)
+            return Response({
+                'id': cookie.id,
+                'title': cookie.title,
+                'task': cookie.task,
+            })
+        return Response({'Error': 'Invalid data'})
+
+    def put(self, request):
+        id = request.data.get('id')
+        if id:
+            cookie = Task.objects.filter(pk=id)
+            cookie.update(
+                title=request.data.get('title'),
+                task=request.data.get('task'),
+            )
+            return Response(cookie.values())
+        return Response({'Error': 'Invalid data'})
+
+    def delete(self, request):
+        id = request.query_params.get('id')
+        if id:
+            cookie = Task.objects.get(pk=id)
+            cookie.delete()
+            return Response({'Response': f'task {id} deleted'})
+        return Response({'Error': 'Invalid data'})
+
+
+@login_required
+def Game(request):
+    core = Core.objects.get(user=request.user)
+    boosts = Boost.objects.filter(core=core)
+    game_context = {
+        'core': core,
+        'boosts': boosts,
+    }
+
+    return render(request, 'users/game.html', game_context)
+
+
+@api_view(['GET'])
+@login_required
+def call_click(request):
+    core = Core.objects.get(user=request.user)
+    is_levelup = core.click()
+    if is_levelup:
+        Boost.objects.create(core=core, price=core.coins, power=core.level * 5)
+    return Response({
+        'core': CoreSerializer(core).data,
+        'is_levelup': is_levelup,
+    })
+
+
+class BoostViewSet(viewsets.ModelViewSet):
+    queryset = Boost.objects.all()
+    serializer_class = BoostSerializer
+
+    def get_queryset(self):
+        core = Core.objects.get(user=self.request.user)
+        boosts = Boost.objects.filter(core=core)
+
+        return boosts
+
+    def partial_update(self, request, pk):
+        boost = self.queryset.get(pk=pk)
+        levelup = boost.levelup()
+        if not levelup:
+            return Response({'error': 'Недостоточно монеток'})
+        old_boost_values, new_boost_values = levelup
+        return Response({
+            'old_boost_values': self.serializer_class(old_boost_values).data,
+            'new_boost_values': self.serializer_class(new_boost_values).data,
+        })
