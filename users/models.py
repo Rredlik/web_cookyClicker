@@ -5,6 +5,7 @@ from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 import users
 from copy import copy
+from .constants import BOOST_TYPE_CHOICES, BOOST_TYPE_VALUES
 
 
 class User(AbstractUser):
@@ -44,23 +45,28 @@ class Core(models.Model):
     )
     coins = models.IntegerField(default=0)
     click_power = models.IntegerField(default=1)
+    auto_click_power = models.IntegerField(default=0)
     level = models.IntegerField(default=1)
 
     def click(self, commit=True):
         self.coins += self.click_power
 
         is_levelupdated = self.is_levelup()
+        boost_type = 0
 
-        if is_levelupdated:
+        if is_levelupdated and self.level <= 10:
             self.level += 1
+
+            if self.level % 5 == 0:
+                boost_type = 1
 
         if commit:
             self.save()
 
-        return is_levelupdated
+        return is_levelupdated, boost_type
 
     def is_levelup(self):
-        return self.coins >= (self.level**2) * 100 * self.level
+        return self.coins >= (self.level**5) * 10 * self.level
 
 
 class Boost(models.Model):
@@ -68,6 +74,7 @@ class Boost(models.Model):
     level = models.IntegerField(default=0)
     price = models.IntegerField(default=10)
     power = models.IntegerField(default=1)
+    type = models.PositiveSmallIntegerField(default=0, choices=BOOST_TYPE_CHOICES)
 
     def levelup(self):
 
@@ -75,14 +82,15 @@ class Boost(models.Model):
             return False
 
         self.core.coins -= self.price
-        self.core.click_power += self.power
+        self.core.click_power += self.power * BOOST_TYPE_VALUES[self.type]['click_power_scale']
+        self.core.auto_click_power += self.power * BOOST_TYPE_VALUES[self.type]['auto_click_power_scale']
         self.core.save()
 
 
         old_boost_values = copy(self)
         self.level += 1
         self.power *= 2
-        self.price *= 10
+        self.price = round(self.price * 1.35)
         self.save()
 
         return old_boost_values, self

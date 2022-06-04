@@ -33,13 +33,15 @@ function get_boosts() {
 
 function add_boost(parent, boost) {
     const button = document.createElement('button')
-    button.setAttribute('class', 'boost')
+    button.setAttribute('class', 'btn btn-outline-secondary')
     button.setAttribute('id', `boost_${boost.id}`)
     button.setAttribute('onclick', `buy_boost(${boost.id})`)
     button.innerHTML = `
-        <p>lvl: <span id="boost_level">${boost.level}</span></p>
-        <p>+<span id="boost_power">${boost.power}</span></p>
-        <p><span id="boost_price">${boost.price}</span></p>
+        <div class="row">
+            <div class="col">lvl: <span id="boost_level">${boost.level}</span></div>
+            <div class="col">+<span id="boost_power">${boost.power}</span></div>
+            <div class="col"><span class="text-end" id="boost_price">${boost.price}</span></div>
+        </div>
     `
     parent.appendChild(button)
 }

@@ -145,9 +145,16 @@ def Game(request):
 @login_required
 def call_click(request):
     core = Core.objects.get(user=request.user)
-    is_levelup = core.click()
-    if is_levelup:
-        Boost.objects.create(core=core, price=core.coins, power=core.level * 5)
+    is_levelup, boost_type = core.click()
+    coins_now = core.coins * 5
+
+    if is_levelup and core.level <= 10:
+        Boost.objects.create(
+            core=core,
+            price=core.coins * 5,
+            power=coins_now * 0.05,
+            type=boost_type,
+        )
     return Response({
         'core': CoreSerializer(core).data,
         'is_levelup': is_levelup,

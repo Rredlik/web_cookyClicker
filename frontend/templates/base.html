@@ -14,15 +14,20 @@
       </a>
       <ul class="nav nav-pills">
         <li class="nav-item"><a href="{% url 'home' %}" class="nav-link">Главная</a></li>
+        <div class="vr"></div>
           {% if user.is_authenticated %}
             <li class="nav-item"><a href="{% url 'tables' %}" class="nav-link">Список задач</a></li>
+            <div class="vr"></div>
             <li class="nav-item"><a href="{% url 'create' %}" class="nav-link">Добавить задачу</a></li>
+            <div class="vr"></div>
             <li class="nav-item"><a href="{% url 'game' %}" class="nav-link">Игра</a></li>
-            <li class="nav-item">User {{ user }}</li>
-            <a href="{% url 'logout' %}" class="btn btn-primary btn-lg px-4">Выйти</a>
+            <div class="vr"></div>
+            <li class="nav-item"><a href="#" class="nav-link disabled">{{ user }}</a></li>
+            <li class="nav-item"><a href="{% url 'logout' %}" class="btn btn-primary btn-lg px-4">Выйти</a></li>
           {% else %}
             <li class="nav-item"><a href="{% url 'game' %}" class="nav-link">Игра</a></li>
-            <li class="nav-item">User {{ user }}</li>
+            <div class="vr"></div>
+            <li class="nav-item"><a href="#" class="nav-link disabled">{{ user }}</a></li>
           {% endif %}
       </ul>
     </header>
