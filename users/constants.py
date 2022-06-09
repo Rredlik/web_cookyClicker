@@ -22,32 +22,53 @@ BOOST_TYPE_VALUES = {
     },
 }
 
+
+BOOST_VALUES_NAME_TO_NUMBER = {
+    'first': 1,
+    'second': 2,
+    'third': 3,
+    'four': 4,
+    'fifth': 5,
+}
+BOOST_VALUES_CHOICES = {
+    (BOOST_VALUES_NAME_TO_NUMBER['first'], 'first'),
+    (BOOST_VALUES_NAME_TO_NUMBER['second'], 'second'),
+    (BOOST_VALUES_NAME_TO_NUMBER['third'], 'third'),
+    (BOOST_VALUES_NAME_TO_NUMBER['four'], 'four'),
+    (BOOST_VALUES_NAME_TO_NUMBER['fifth'], 'fifth'),
+}
+
 CASUAL_BOOSTS_VALUES = {
-    1: {
+    BOOST_VALUES_NAME_TO_NUMBER['first']: {
+        'boost_number': 1,
         'need_level': 2,
         'base_click_power': 1,
         'base_price': 13,
         'price_scale': 1.35,
     },
-    2: {
+    BOOST_VALUES_NAME_TO_NUMBER['second']: {
+        'boost_number': 2,
         'need_level': 3,
         'base_click_power': 8,
         'base_price': 100,
         'price_scale': 1.7,
     },
-    3: {
+    BOOST_VALUES_NAME_TO_NUMBER['third']: {
+        'boost_number': 3,
         'need_level': 4,
         'click_power_scale': 50,
         'base_price': 11000,
         'price_scale': 1.25,
     },
-    4: {
+    BOOST_VALUES_NAME_TO_NUMBER['four']: {
+        'boost_number': 4,
         'need_level': 5,
         'click_power_scale': 300,
-        'base_price': 10,
+        'base_price': 150000,
         'price_scale': 1.3,
     },
-    5: {
+    BOOST_VALUES_NAME_TO_NUMBER['fifth']: {
+        'boost_number': 5,
         'need_level': 6,
         'click_power_scale': 1500,
         'base_price': 1300000,
