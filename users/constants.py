@@ -22,7 +22,7 @@ BOOST_TYPE_VALUES = {
     },
 }
 
-CASUAL_BOOST_TYPE_VALUES = {
+CASUAL_BOOSTS_VALUES = {
     1: {
         'need_level': 2,
         'base_click_power': 1,

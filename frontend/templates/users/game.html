@@ -68,7 +68,7 @@ Supa clicker
                         <h3 class="display-6">БУСТЫ</h3>
                         <div class="d-grid gap-2 mx-auto" role="group" aria-label="Vertical button group" id="boosts-holder">
                             {% for boost in boosts %}
-                                <button class="btn btn-outline-secondary" id="boost_{{boost.id}}" onclick="buy_boost({{boost.id}})">
+                                <button class="boost_{{boost.type}} btn btn-outline-secondary" id="boost_{{boost.id}}" onclick="buy_boost({{boost.id}})">
                                     <div class="row">
                                         <div class="col">lvl: <span id="boost_level">{{boost.level}}</span></div>
                                         <div class="col">+<span id="boost_power">{{boost.power}}</span></div>

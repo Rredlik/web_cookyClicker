@@ -5,7 +5,7 @@ from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 import users
 from copy import copy
-from .constants import BOOST_TYPE_CHOICES, BOOST_TYPE_VALUES
+from .constants import BOOST_TYPE_CHOICES, BOOST_TYPE_VALUES, CASUAL_BOOSTS_VALUES
 
 
 class User(AbstractUser):
@@ -48,25 +48,29 @@ class Core(models.Model):
     auto_click_power = models.IntegerField(default=0)
     level = models.IntegerField(default=1)
 
-    def click(self, commit=True):
-        self.coins += self.click_power
-
+    def update_coins(self, coins, commit=True):
+        self.coins = coins
         is_levelupdated = self.is_levelup()
-        boost_type = 0
+        boost_type = self.get_boost_type()
 
-        if is_levelupdated and self.level <= 10:
+        if is_levelupdated:
             self.level += 1
-
-            if self.level % 5 == 0:
-                boost_type = 1
-
         if commit:
             self.save()
 
         return is_levelupdated, boost_type
 
+    def get_boost_type(self):
+        boost_type = 0
+        if self.level % 3 == 0:
+                boost_type = 1
+        return boost_type
+
     def is_levelup(self):
-        return self.coins >= (self.level**5) * 10 * self.level
+        return self.coins >= self.calculate_next_level_price()
+
+    def calculate_next_level_price(self):
+        return (self.level ** 5) * 10 * self.level
 
 
 class Boost(models.Model):
@@ -76,12 +80,12 @@ class Boost(models.Model):
     power = models.IntegerField(default=1)
     type = models.PositiveSmallIntegerField(default=0, choices=BOOST_TYPE_CHOICES)
 
-    def levelup(self):
+    def levelup(self, coins):
 
-        if self.core.coins < self.price:
+        if coins < self.price:
             return False
 
-        self.core.coins -= self.price
+        self.core.coins = coins - self.price
         self.core.click_power += self.power * BOOST_TYPE_VALUES[self.type]['click_power_scale']
         self.core.auto_click_power += self.power * BOOST_TYPE_VALUES[self.type]['auto_click_power_scale']
         self.core.save()
