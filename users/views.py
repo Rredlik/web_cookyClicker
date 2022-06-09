@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 from users.forms import UserForm, TaskForm
 from users.models import Task, Core, Boost
 from users.serializer import CoreSerializer, BoostSerializer
-
+from .constants import CASUAL_BOOSTS_VALUES
 
 
 class Register(View):
@@ -159,8 +159,8 @@ def update_coins(request):
     if is_levelup and core.level <= 10:
         Boost.objects.create(
             core=core,
-            price=core.coins * 10,
-            power=core.level**3,
+            price=CASUAL_BOOSTS_VALUES[core.level - 1]['base_price'],
+            power=CASUAL_BOOSTS_VALUES[core.level - 1]['base_click_power'],
             type=boost_type,
         )
     return Response({
