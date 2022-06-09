@@ -63,7 +63,7 @@ class Core(models.Model):
     def get_boost_type(self):
         boost_type = 0
         if self.level % 3 == 0:
-                boost_type = 1
+            boost_type = 1
         return boost_type
 
     def is_levelup(self):
@@ -93,8 +93,7 @@ class Boost(models.Model):
 
         old_boost_values = copy(self)
         self.level += 1
-        self.power *= 2
-        self.price = round(self.price * 1.35)
+        self.price = round(self.price * 1.55)
         self.save()
 
         return old_boost_values, self

@@ -12,6 +12,7 @@ from users.models import Task, Core, Boost
 from users.serializer import CoreSerializer, BoostSerializer
 
 
+
 class Register(View):
     template_name = 'registration/register.html'
 
@@ -159,7 +160,7 @@ def update_coins(request):
         Boost.objects.create(
             core=core,
             price=core.coins * 10,
-            power=core.level**2,
+            power=core.level**3,
             type=boost_type,
         )
     return Response({
