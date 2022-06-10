@@ -178,7 +178,7 @@ function buy_boost(boost_id) {
         if (old_boost_stats.type === 1) {
             Game.add_power(old_boost_stats.power)
         } else {
-            Game.auto_click_power(old_boost_stats.power)
+            Game.add_auto_power(old_boost_stats.power)
         }
         update_boost(new_boost_stats) // Обновляем буст на фронтике.
     }).catch(err => console.log(err))
