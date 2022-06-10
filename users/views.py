@@ -156,7 +156,7 @@ def update_coins(request):
     core = Core.objects.get(user=request.user)
     is_levelup, boost_type = core.update_coins(coins)
 
-    if is_levelup and core.level <= 10:
+    if is_levelup and core.level <= 6:
         Boost.objects.create(
             core=core,
             price=CASUAL_BOOSTS_VALUES[core.level - 1]['base_price'],

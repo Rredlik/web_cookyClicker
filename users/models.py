@@ -51,26 +51,38 @@ class Core(models.Model):
     def update_coins(self, coins, commit=True):
         self.coins = coins
         is_levelupdated = self.is_levelup()
-        boost_type = self.get_boost_type()
+        boost_type = self.level - 1
 
         if is_levelupdated:
             self.level += 1
+            boost_type = self.level - 1
         if commit:
             self.save()
 
         return is_levelupdated, boost_type
 
-    def get_boost_type(self):
-        boost_type = 0
-        if self.level % 3 == 0:
-            boost_type = 1
-        return boost_type
+#    def get_boost_type(self):
+ #       boost_type = 0
+  #      if self.level % 3 == 0:
+   #         boost_type = 1
+    #    return boost_type
 
     def is_levelup(self):
         return self.coins >= self.calculate_next_level_price()
 
     def calculate_next_level_price(self):
-        return (self.level ** 5) * 10 * self.level
+        if self.level == 1:
+            return 10
+        if self.level == 2:
+            return 70
+        if self.level == 3:
+            return 9000
+        if self.level == 4:
+            return 100000
+        if self.level == 5:
+            return 1000000
+        if self.level >= 6:
+            return (self.level ** 5) * 10 * self.level
 
 
 class Boost(models.Model):
@@ -78,7 +90,7 @@ class Boost(models.Model):
     level = models.IntegerField(default=0)
     price = models.IntegerField(default=10)
     power = models.IntegerField(default=1)
-    type = models.PositiveSmallIntegerField(default=0, choices=BOOST_TYPE_CHOICES)
+    type = models.PositiveSmallIntegerField(default=1, choices=BOOST_TYPE_CHOICES)
 
     def levelup(self, coins):
 
@@ -93,7 +105,7 @@ class Boost(models.Model):
 
         old_boost_values = copy(self)
         self.level += 1
-        self.price = round(self.price * 1.55)
+        self.price = round(self.price * BOOST_TYPE_VALUES[self.type]['price_scale'])
         self.save()
 
         return old_boost_values, self
