@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 import os.path
 from pathlib import Path
+from sshtunnel import SSHTunnelForwarder
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -79,11 +80,34 @@ WSGI_APPLICATION = 'my_site.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
+ssh_tunnel = SSHTunnelForwarder(
+    '213.109.204.102',
+    ssh_username='rredlik',
+    ssh_password='1234user',
+    remote_bind_address=('localhost', 3306)
+)
+ssh_tunnel.start()
+
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': os.environ.get('DJANGO_MYSQL_DATABASE') or 'djangoblog',
+    #     'USER': os.environ.get('DJANGO_MYSQL_USER') or 'rredlik',
+    #     'PASSWORD': os.environ.get('DJANGO_MYSQL_PASSWORD') or '1234bestuser',
+    #     'HOST': os.environ.get('DJANGO_MYSQL_HOST') or '127.0.0.1',
+    #     'PORT': int(
+    #         os.environ.get('DJANGO_MYSQL_PORT') or 3306),
+    #     'OPTIONS': {
+    #         'charset': 'utf8mb4'},
+    # },
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST': 'localhost',
+        'PORT': ssh_tunnel.local_bind_port,
+        'NAME': 'djangoblog',
+        'USER': 'rredlik',
+        'PASSWORD': '1234bestuser',
+    },
 }
 
 
